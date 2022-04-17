@@ -1,0 +1,44 @@
+body {
+  background-color: #ecf5ff;
+  margin: 0;
+}
+
+
+.card {
+  height: 88vh;
+}
+
+/*操作*/
+
+.handle {
+  display: flex;
+  justify-content: space-around;
+}
+
+.handle-icon {
+  cursor: pointer;
+}
+
+/*搜索*/
+
+.search {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.search-item {
+  display: flex;
+  align-items: center;
+}
+
+.search-item-text {
+  width: 5em;
+  margin-right: 0.5em;
+  text-align: right;
+}
+
+/*内容*/
+.content {
+  white-space: pre-wrap;
+}
