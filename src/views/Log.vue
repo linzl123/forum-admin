@@ -7,6 +7,9 @@
 </template>
 
 <script setup>
+
+import {onUnmounted} from "vue"
+
 const tableData = [
   {
     date: "2016-05-03",
@@ -29,6 +32,58 @@ const tableData = [
     address: "No. 189, Grove St, Los Angeles",
   },
 ]
+//WebSocket
+const wsUrl = import.meta.env.VITE_WS_URL
+let ws = null
+const createWebSocket = () => {
+  try {
+    ws = new WebSocket(wsUrl)
+    init()
+  } catch (e) {
+    console.log(e)
+    // reconnect(wsUrl)
+  }
+}
+
+try {
+  createWebSocket()
+} catch (e) {
+  console.log(e)
+}
+
+function init() {
+  ws.onclose = () => {
+    reconnect(wsUrl)
+  }
+  ws.onerror = () => {
+    reconnect(wsUrl)
+  }
+  ws.onmessage = (e) => {
+    if (e.data === "PING") {
+      ws.send("PONG")
+    } else {
+      console.log(JSON.parse(e.data))
+      console.log(new Date().toLocaleString())
+    }
+  }
+}
+
+let lockReconnect = false
+
+function reconnect(url) {
+  if (lockReconnect) return
+  lockReconnect = true
+  setTimeout(() => {
+    createWebSocket(url)
+    lockReconnect = false
+  }, 3000)
+}
+
+onUnmounted(() => {
+  ws.onmessage = null
+  ws.onclose = null
+  ws.close()
+})
 </script>
 
 <style scoped>

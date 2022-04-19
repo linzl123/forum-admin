@@ -89,8 +89,10 @@ const banEnsure = async () => {
     if (/^((25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))$/.test(ipInput.value)) {
       let res = await addBanIp(ipInput.value, reasonInput.value)
       if (res.state === 100) {
-        allIpArr.value.push({ip: ipInput, reason: reasonInput})
+        allIpArr.value.push({ip: ipInput.value, reason: reasonInput.value})
         banDialog.value = false
+        ipInput.value = ""
+        reasonInput.value = ""
         store.commit("alert", {message: "封禁成功", type: "success"})
       } else if (res.state === 102) {
         store.commit("alert", {message: "该IP已被封禁", type: "info"})

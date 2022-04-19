@@ -118,7 +118,7 @@ const handleDelete = async (reply) => {
   if (delLock) return
   delLock = true
   let res = await deleteReplyByRid(reply.reply_id)
-  if (res.state === 100) {
+  if (res.state === 100 || res.state === 101) {
     allReplyArr.value.splice(allReplyArr.value.indexOf(reply), 1)
     store.commit("alert", {message: "删除成功", type: "success"})
   } else {

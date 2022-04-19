@@ -79,7 +79,7 @@
     </el-table>
   </el-card>
 
-  <el-dialog v-model="silenceDialog" title="禁言时长" width="30%">
+  <el-dialog v-model="silenceDialog" title="禁言时长（全为0则取消）" width="30%">
     <div class="silence-time">
       <div>
         <el-input-number v-model="dayInput" controls-position="right" :min="0"/>
@@ -131,12 +131,10 @@ const create = async () => {
         v.banReason = banUser.reason
         v.banColor = "#d81e06"
         v.banText = "取消封禁此用户"
-        console.log(Boolean(v.banReason))
       } else {
         v.banReason = ""
         v.banColor = "#8a8a8a"
         v.banText = "封禁此用户"
-        console.log(Boolean(v.banReason))
       }
       if (v.need_approval) {
         v.auditedText = "取消标记为需审核用户"
@@ -175,21 +173,23 @@ const silenceDialog = ref(false)
 const dayInput = ref(0)
 const hourInput = ref(0)
 const silenceLoading = ref(false)
-let checkedUid = 0
+let checkedUser = null
 const handleSilence = async (user) => {
-  checkedUid = user.u_id
+  checkedUser = user
   silenceDialog.value = true
 }
 const silenceEnsure = async () => {
   silenceLoading.value = true
   let time = String(new Date().valueOf() + dayInput.value * 86400000 + hourInput.value * 3600000)
-  let res = await silenceUser(checkedUid, time)
+  let res = await silenceUser(checkedUser.u_id, time)
   if (res.state === 100) {
     if (dayInput.value !== 0 || hourInput.value !== 0) {
       dayInput.value = 0
       hourInput.value = 0
+      checkedUser.silenceTime = new Date(Number(time)).toLocaleString()
       store.commit("alert", {message: "禁言成功", type: "success"})
     } else {
+      checkedUser.silenceTime = ""
       store.commit("alert", {message: "取消禁言成功", type: "success"})
     }
     silenceDialog.value = false
@@ -211,7 +211,7 @@ const handleBan = async (user) => {
   if (banLock) return
   banLock = true
   if (user.banReason === "") {
-    banInput.value = user.reason
+    banInput.value = user.banReason
     checkUser = user
     banDialog.value = true
   } else {
@@ -231,16 +231,17 @@ const banEnsure = async () => {
   banLoading.value = true
   if (banInput.value === "") {
     store.commit("alert", {message: "请输入原因", type: "warning"})
-  }
-  let res = await addBanUser(checkUser.u_id, banInput.value)
-  if (res.state === 100) {
-    checkUser.banReason = banInput.value
-    checkUser.banColor = "#d81e06"
-    checkUser.banText = "取消封禁此用户"
-    store.commit("alert", {message: "封禁成功", type: "success"})
-    banDialog.value = false
   } else {
-    store.commit("alert", {message: "服务器出错", type: "error"})
+    let res = await addBanUser(checkUser.u_id, banInput.value)
+    if (res.state === 100) {
+      checkUser.banReason = banInput.value
+      checkUser.banColor = "#d81e06"
+      checkUser.banText = "取消封禁此用户"
+      store.commit("alert", {message: "封禁成功", type: "success"})
+      banDialog.value = false
+    } else {
+      store.commit("alert", {message: "服务器出错", type: "error"})
+    }
   }
   banLoading.value = false
 }

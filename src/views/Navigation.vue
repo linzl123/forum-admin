@@ -22,9 +22,9 @@
         <el-menu-item index="/ip">
           <span>IP 管理</span>
         </el-menu-item>
-        <el-menu-item index="/log">
-          <span>日志文件</span>
-        </el-menu-item>
+<!--        <el-menu-item index="/log">-->
+<!--          <span>日志文件</span>-->
+<!--        </el-menu-item>-->
       </el-menu>
     </el-col>
     <el-col :span="20">

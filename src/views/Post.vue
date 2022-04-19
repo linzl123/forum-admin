@@ -251,7 +251,7 @@ const handleDelete = async (post) => {
   if (delLock) return
   delLock = true
   let res = await deletePostByPid(post.post_id)
-  if (res.state === 100) {
+  if (res.state === 100||res.state === 101) {
     allPostArr.value.splice(allPostArr.value.indexOf(post), 1)
     store.commit("alert", {message: "删除成功", type: "success"})
   } else {

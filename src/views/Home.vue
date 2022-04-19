@@ -1,5 +1,4 @@
 <template>
-  <div @click="test">123</div>
   <div class="pie-chart-post">
     <el-card v-for="item in pieChartList" :key="item" class="pie-chart-card">
       <template #header>
@@ -35,7 +34,7 @@
 </template>
 
 <script setup>
-import * as echarts from "echarts"
+import * as ECharts from "echarts"
 import {getPostBarChart, getPostLineChart, getPostPieChart} from "@/api/statistics.js"
 import {computed, nextTick, ref} from "vue"
 import {useRouter} from "vue-router"
@@ -52,7 +51,7 @@ const getPostCount = async (start, end) => {
   }
 }
 const postPieChart = (className, order, postCnt) => {
-  let pieChart = echarts.init(document.getElementsByClassName(className)[order])
+  let pieChart = ECharts.init(document.getElementsByClassName(className)[order])
   let option = {
     tooltip: {
       trigger: "item",
@@ -85,7 +84,7 @@ const pieChartDomList = []
 const msDay = 1000 * 60 * 60 * 24
 const now = new Date()
 const nowMs = now.getTime()
-const todayZeroMs = Math.floor(nowMs / msDay) * msDay // 今日0点
+const todayZeroMs = new Date(now.toLocaleDateString()).getTime()
 const sundayZeroMs = todayZeroMs - now.getDay() * msDay // 本周周日0点
 const firstDayZeroOfThisMonthMs = todayZeroMs - (now.getDate() - 1) * msDay // 本月1日0点
 //自定义时间
@@ -149,7 +148,7 @@ nextTick(() => {
     })
   })
   //折线图
-  lineChartDom = echarts.init(document.querySelector(".line-chart-month"))
+  lineChartDom = ECharts.init(document.querySelector(".line-chart-month"))
   reqPostLineChart.then((res) => {
     let keys = Object.keys(res.post_count_by_day)
     let values = Object.values(res.post_count_by_day)
@@ -194,7 +193,7 @@ nextTick(() => {
     })
   })
   //条形图
-  barChartDom = echarts.init(document.querySelector(".bar-chart-daily"))
+  barChartDom = ECharts.init(document.querySelector(".bar-chart-daily"))
   reqPostBarChart.then((res) => {
     console.log(res)
     let keys = Object.keys(res.post_count_by_day)
@@ -228,11 +227,6 @@ nextTick(() => {
     })
   })
 })
-
-const test = () => {
-  request()
-
-}
 </script>
 
 <style scoped>
@@ -276,8 +270,8 @@ const test = () => {
 }
 
 .line-chart-month {
-  width: 1000px;
-  height: 400px;
+  width: 1192px;
+  height: 446px;
   margin: 0 auto;
 }
 </style>

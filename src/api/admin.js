@@ -73,5 +73,3 @@ export function fetchApprovePost(approval_post_id) {
     approval_post_id,
   })
 }
-
-// log

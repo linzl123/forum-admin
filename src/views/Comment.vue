@@ -148,7 +148,7 @@ const handleDelete = async (comment) => {
   if (delLock) return
   delLock = true
   let res = await deleteCommentByCid(comment.comment_id)
-  if (res.state === 100) {
+  if (res.state === 100||res.state === 101) {
     allCommentArr.value.splice(allCommentArr.value.indexOf(comment), 1)
     store.commit("alert", {message: "删除成功", type: "success"})
   } else {
