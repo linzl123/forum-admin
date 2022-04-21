@@ -1,6 +1,6 @@
 <template>
-  <el-row>
-    <el-col :span="4" class="sidebar">
+  <div>
+    <div class="left-menu">
       <el-menu
         :default-active="route.path"
         background-color="#304156"
@@ -22,12 +22,12 @@
         <el-menu-item index="/ip">
           <span>IP 管理</span>
         </el-menu-item>
-<!--        <el-menu-item index="/log">-->
-<!--          <span>日志文件</span>-->
-<!--        </el-menu-item>-->
+        <!--        <el-menu-item index="/log">-->
+        <!--          <span>日志文件</span>-->
+        <!--        </el-menu-item>-->
       </el-menu>
-    </el-col>
-    <el-col :span="20">
+    </div>
+    <div class="right-main">
       <el-page-header class="navbar" title="返回" :content="route.meta.content" @back="router.back()"/>
       <div style="padding: 16px">
         <router-view></router-view>
@@ -37,8 +37,8 @@
         <!--          </keep-alive>-->
         <!--        </router-view>-->
       </div>
-    </el-col>
-  </el-row>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -49,9 +49,20 @@ const router = useRouter()
 </script>
 
 <style scoped>
-.sidebar {
+.left-menu {
+  box-sizing: border-box;
+  position: fixed;
+  width: 16vw;
+  height: 100vh;
   background-color: #304156;
-  min-height: 100vh;
+}
+
+.left-menu >>> .el-menu {
+  border: 0;
+}
+
+.right-main {
+  margin-left: 16vw;
 }
 
 .navbar {
