@@ -93,14 +93,12 @@ const createWebSocket = () => {
   try {
     window.ws = new WebSocket(wsUrl)
     window.ws.onopen = () => {
-      console.log("onopen")
-      wsLoading.value = false
       wsConnect.value = true
+      wsLoading.value = false
     }
     window.ws.onclose = () => {
-      console.log("onclose")
-      wsLoading.value = false
       wsConnect.value = false
+      wsLoading.value = false
     }
     window.ws.onmessage = (e) => {
       if (e.data === "PING") {
