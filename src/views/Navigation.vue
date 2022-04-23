@@ -23,7 +23,7 @@
           <span>IP 管理</span>
         </el-menu-item>
         <el-menu-item index="/log">
-          <span>日志文件</span>
+          <span>用户日志</span>
         </el-menu-item>
       </el-menu>
     </div>
@@ -50,44 +50,22 @@ const router = useRouter()
 
 
 //WebSocket
-const wsUrl = import.meta.env.VITE_WS_URL
-const createWebSocket = () => {
-  try {
-    window.ws = new WebSocket(wsUrl)
-    init()
-  } catch (e) {
-    console.log(e)
-    // reconnect(wsUrl)
-  }
-}
-createWebSocket()
-
-function init() {
-  window.ws.onclose = () => {
-    reconnect(wsUrl)
-  }
-  window.ws.onerror = () => {
-    reconnect(wsUrl)
-  }
-  window.ws.onmessage = (e) => {
-    if (e.data === "PING") {
-      window.ws.send("PONG")
-    } else {
-      store.commit("addLog", JSON.parse(e.data))
-    }
-  }
-}
-
-let lockReconnect = false
-
-function reconnect(url) {
-  if (lockReconnect) return
-  lockReconnect = true
-  setTimeout(() => {
-    createWebSocket(url)
-    lockReconnect = false
-  }, 3000)
-}
+// const wsUrl = import.meta.env.VITE_WS_URL
+// const createWebSocket = () => {
+//   try {
+//     window.ws = new WebSocket(wsUrl)
+//     window.ws.onmessage = (e) => {
+//       if (e.data === "PING") {
+//         window.ws.send("PONG")
+//       } else {
+//         store.commit("addLog", JSON.parse(e.data))
+//       }
+//     }
+//   } catch (e) {
+//     console.error(e)
+//   }
+// }
+// createWebSocket()
 </script>
 
 <style scoped>

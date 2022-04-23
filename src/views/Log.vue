@@ -3,6 +3,16 @@
     <template #header>
       <div class="search">
         <div class="search-item">
+          <el-switch
+            v-model="wsConnect"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            :loading="wsLoading"
+            @click="wsSwitch"
+          />
+          {{ wsConnectText }}
+        </div>
+        <div class="search-item">
           <span class="search-item-text">ID</span>
           <el-input v-model="inputUid" clearable>
             <template #prefix>🔍</template>
@@ -37,13 +47,14 @@
       <el-table-column prop="operate_name" label="操作"/>
       <el-table-column prop="http_status_code" label="状态码"/>
       <el-table-column prop="response_message['state_message']" label="响应消息"/>
+      <el-table-column prop="operate_time" label="时间"/>
     </el-table>
   </el-card>
 </template>
 
 <script setup>
 import store from "@/store"
-import {computed, ref} from "vue"
+import {computed, ref, watch} from "vue"
 //
 const curLogList = computed(() =>
   store.state.logList.filter(log =>
@@ -65,8 +76,44 @@ const resetSearch = () => {
 const clearLog = () => {
   store.commit("clearLog")
 }
+// WebSocket
+const wsLoading = ref(false)
+const wsConnect = ref(false)
+const wsConnectText = computed(() => wsConnect.value ? "连接中" : "未连接")
+const wsSwitch = () => {
+  wsLoading.value = true
+  if (wsConnect.value) {
+    createWebSocket()
+  } else {
+    window.ws.close()
+  }
+}
+const createWebSocket = () => {
+  const wsUrl = import.meta.env.VITE_WS_URL
+  try {
+    window.ws = new WebSocket(wsUrl)
+    window.ws.onopen = () => {
+      console.log("onopen")
+      wsLoading.value = false
+      wsConnect.value = true
+    }
+    window.ws.onclose = () => {
+      console.log("onclose")
+      wsLoading.value = false
+      wsConnect.value = false
+    }
+    window.ws.onmessage = (e) => {
+      if (e.data === "PING") {
+        window.ws.send("PONG")
+      } else {
+        store.commit("addLog", JSON.parse(e.data))
+      }
+    }
+  } catch (e) {
+    console.error(e)
+  }
+}
 </script>
 
 <style scoped>
-
 </style>
