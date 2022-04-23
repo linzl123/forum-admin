@@ -113,7 +113,7 @@ const handleCancelBan = async (ip) => {
   let res = await cancelBanIp(ip.ip)
   if (res.state === 100) {
     allIpArr.value.splice(allIpArr.value.indexOf(ip), 1)
-    store.commit("alert", {message: "删除成功", type: "success"})
+    store.commit("alert", {message: "取消封禁成功", type: "success"})
   } else {
     store.commit("alert", {message: "服务器出错", type: "error"})
   }
