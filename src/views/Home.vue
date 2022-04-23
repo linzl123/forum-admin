@@ -141,7 +141,7 @@ nextTick(() => {
       pieChartDomList[i] = postPieChart("pie-chart-zone", i, res)
       //todo
       pieChartDomList[i].on("click", (params) => {
-        console.log(params)
+
         return
         router.push("/post")
       })

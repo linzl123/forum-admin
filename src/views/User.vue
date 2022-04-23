@@ -3,7 +3,13 @@
     <template #header>
       <div class="search">
         <div class="search-item">
-          <span class="search-item-text">用户名</span>
+          <span class="search-item-text">ID</span>
+          <el-input v-model="inputUid" clearable>
+            <template #prefix>🔍</template>
+          </el-input>
+        </div>
+        <div class="search-item">
+          <span class="search-item-text">帐号</span>
           <el-input v-model="inputUname" clearable>
             <template #prefix>🔍</template>
           </el-input>
@@ -31,7 +37,7 @@
           <el-avatar :size="40" :src="data.row.img_id"/>
         </template>
       </el-table-column>
-      <el-table-column prop="u_name" label="用户名"/>
+      <el-table-column prop="u_name" label="帐号"/>
       <el-table-column prop="u_nickname" label="昵称"/>
       <el-table-column prop="u_time" label="创建时间" width="163"/>
       <el-table-column prop="silenceTime" label="禁言到期时间" width="155"/>
@@ -157,14 +163,18 @@ const create = async () => {
 }
 const curUserArr = computed(() =>
   allUserArr.value.filter(user =>
-    user.u_name.includes(inputUname.value) && user.u_nickname.includes(inputNickname.value),
+    String(user.u_id).includes(inputUid.value)
+    && user.u_name.includes(inputUname.value)
+    && user.u_nickname.includes(inputNickname.value),
   ),
 )
 create()
 // 查询
+const inputUid = ref("")
 const inputUname = ref("")
 const inputNickname = ref("")
 const resetSearch = () => {
+  inputUid.value = ""
   inputUname.value = ""
   inputNickname.value = ""
 }

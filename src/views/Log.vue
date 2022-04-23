@@ -1,89 +1,71 @@
 <template>
-  <el-table :data="tableData" border style="width: 100%">
-    <el-table-column prop="date" label="Date" width="180"/>
-    <el-table-column prop="name" label="Name" width="180"/>
-    <el-table-column prop="address" label="Address"/>
-  </el-table>
+  <el-card class="card">
+    <template #header>
+      <div class="search">
+        <div class="search-item">
+          <span class="search-item-text">ID</span>
+          <el-input v-model="inputUid" clearable>
+            <template #prefix>🔍</template>
+          </el-input>
+        </div>
+        <div class="search-item">
+          <span class="search-item-text">操作</span>
+          <el-input v-model="inputOperate" clearable>
+            <template #prefix>🔍</template>
+          </el-input>
+        </div>
+        <div class="search-item">
+          <span class="search-item-text">状态码</span>
+          <el-input v-model="inputStatus" clearable>
+            <template #prefix>🔍</template>
+          </el-input>
+        </div>
+        <div class="search-item">
+          <el-button @click="resetSearch">重置</el-button>
+        </div>
+        <div class="search-item">
+          <el-button @click="clearLog">清空</el-button>
+        </div>
+      </div>
+    </template>
+    <el-table :data="curLogList" border style="width: 100%" height="73vh">
+      <template #empty>
+        <div>暂无数据</div>
+      </template>
+      <el-table-column prop="u_id" label="UID"/>
+      <el-table-column prop="ip" label="IP"/>
+      <el-table-column prop="operate_name" label="操作"/>
+      <el-table-column prop="http_status_code" label="状态码" width="163"/>
+      <el-table-column prop="response_message['响应消息']" label="响应消息" width="155">
+      </el-table-column>
+    </el-table>
+  </el-card>
 </template>
 
 <script setup>
-
-import {onUnmounted} from "vue"
-
-const tableData = [
-  {
-    date: "2016-05-03",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-02",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-04",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-01",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-]
-//WebSocket
-const wsUrl = import.meta.env.VITE_WS_URL
-let ws = null
-const createWebSocket = () => {
-  try {
-    ws = new WebSocket(wsUrl)
-    init()
-  } catch (e) {
-    console.log(e)
-    // reconnect(wsUrl)
-  }
+import store from "@/store"
+import {computed, ref} from "vue"
+//
+const curLogList = computed(() =>
+  store.state.logList.filter(log =>
+    String(log.u_id).includes(inputUid.value)
+    && log.operate_name.includes(inputOperate.value)
+    && String(log.http_status_code).includes(inputStatus.value),
+  ),
+)
+// 查询
+const inputUid = ref("")
+const inputOperate = ref("")
+const inputStatus = ref("")
+const resetSearch = () => {
+  inputUid.value = ""
+  inputOperate.value = ""
+  inputStatus.value = ""
 }
-
-try {
-  createWebSocket()
-} catch (e) {
-  console.log(e)
+//
+const clearLog = () => {
+  store.commit("clearLog")
 }
-
-function init() {
-  ws.onclose = () => {
-    reconnect(wsUrl)
-  }
-  ws.onerror = () => {
-    reconnect(wsUrl)
-  }
-  ws.onmessage = (e) => {
-    if (e.data === "PING") {
-      ws.send("PONG")
-    } else {
-      console.log(JSON.parse(e.data))
-      console.log(new Date().toLocaleString())
-    }
-  }
-}
-
-let lockReconnect = false
-
-function reconnect(url) {
-  if (lockReconnect) return
-  lockReconnect = true
-  setTimeout(() => {
-    createWebSocket(url)
-    lockReconnect = false
-  }, 3000)
-}
-
-onUnmounted(() => {
-  ws.onmessage = null
-  ws.onclose = null
-  ws.close()
-})
 </script>
 
 <style scoped>

@@ -22,9 +22,9 @@
         <el-menu-item index="/ip">
           <span>IP 管理</span>
         </el-menu-item>
-        <!--        <el-menu-item index="/log">-->
-        <!--          <span>日志文件</span>-->
-        <!--        </el-menu-item>-->
+        <el-menu-item index="/log">
+          <span>日志文件</span>
+        </el-menu-item>
       </el-menu>
     </div>
     <div class="right-main">
@@ -43,9 +43,57 @@
 
 <script setup>
 import {useRoute, useRouter} from "vue-router"
+import store from "@/store"
 
 const route = useRoute()
 const router = useRouter()
+
+
+//WebSocket
+const wsUrl = import.meta.env.VITE_WS_URL
+const createWebSocket = () => {
+  try {
+    window.ws = new WebSocket(wsUrl)
+    init()
+  } catch (e) {
+    console.log(e)
+    // reconnect(wsUrl)
+  }
+}
+
+try {
+  createWebSocket()
+} catch (e) {
+  console.log(e)
+}
+
+function init() {
+  window.ws.onclose = () => {
+    reconnect(wsUrl)
+  }
+  window.ws.onerror = () => {
+    reconnect(wsUrl)
+  }
+  window.ws.onmessage = (e) => {
+    if (e.data === "PING") {
+      window.ws.send("PONG")
+    } else {
+      store.commit("addLog", JSON.parse(e.data))
+      console.log(store.state.logList)
+    }
+  }
+}
+
+let lockReconnect = false
+
+function reconnect(url) {
+  if (lockReconnect) return
+  lockReconnect = true
+  setTimeout(() => {
+    createWebSocket(url)
+    lockReconnect = false
+  }, 3000)
+}
 </script>
 
 <style scoped>
@@ -57,7 +105,7 @@ const router = useRouter()
   background-color: #304156;
 }
 
-.left-menu >>> .el-menu {
+.left-menu:deep(.el-menu) {
   border: 0;
 }
 
