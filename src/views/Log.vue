@@ -35,9 +35,8 @@
       <el-table-column prop="u_id" label="UID"/>
       <el-table-column prop="ip" label="IP"/>
       <el-table-column prop="operate_name" label="操作"/>
-      <el-table-column prop="http_status_code" label="状态码" width="163"/>
-      <el-table-column prop="response_message['state_message']" label="响应消息" width="155">
-      </el-table-column>
+      <el-table-column prop="http_status_code" label="状态码"/>
+      <el-table-column prop="response_message['state_message']" label="响应消息"/>
     </el-table>
   </el-card>
 </template>
