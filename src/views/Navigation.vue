@@ -60,6 +60,7 @@ const createWebSocket = () => {
     // reconnect(wsUrl)
   }
 }
+createWebSocket()
 
 function init() {
   window.ws.onclose = () => {
