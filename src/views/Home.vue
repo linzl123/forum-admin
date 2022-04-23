@@ -139,12 +139,6 @@ nextTick(() => {
   reqPostPieChart.forEach(async (v, i) => {
     v.then((res) => {
       pieChartDomList[i] = postPieChart("pie-chart-zone", i, res)
-      //todo
-      pieChartDomList[i].on("click", (params) => {
-
-        return
-        router.push("/post")
-      })
     })
   })
   //折线图
@@ -195,7 +189,6 @@ nextTick(() => {
   //条形图
   barChartDom = ECharts.init(document.querySelector(".bar-chart-daily"))
   reqPostBarChart.then((res) => {
-    console.log(res)
     let keys = Object.keys(res.post_count_by_day)
     let values = Object.values(res.post_count_by_day)
     barChartDom.setOption({

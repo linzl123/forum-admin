@@ -61,12 +61,6 @@ const createWebSocket = () => {
   }
 }
 
-try {
-  createWebSocket()
-} catch (e) {
-  console.log(e)
-}
-
 function init() {
   window.ws.onclose = () => {
     reconnect(wsUrl)
@@ -79,7 +73,6 @@ function init() {
       window.ws.send("PONG")
     } else {
       store.commit("addLog", JSON.parse(e.data))
-      console.log(store.state.logList)
     }
   }
 }
