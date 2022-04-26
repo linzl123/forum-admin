@@ -36,7 +36,7 @@
 <script setup>
 import * as ECharts from "echarts"
 import {getPostBarChart, getPostLineChart, getPostPieChart} from "@/api/statistics.js"
-import {computed, nextTick, onUnmounted, ref} from "vue"
+import {computed, nextTick, onBeforeUnmount, ref} from "vue"
 import {useRouter} from "vue-router"
 
 const router = useRouter()
@@ -219,6 +219,13 @@ nextTick(() => {
       ],
     })
   })
+})
+onBeforeUnmount(() => {
+  reqPostPieChart.forEach((_, i) => {
+    pieChartDomList[i].dispose()
+  })
+  lineChartDom.dispose()
+  barChartDom.dispose()
 })
 </script>
 
