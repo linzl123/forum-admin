@@ -18,7 +18,7 @@
           <el-button @click="resetSearch">重置</el-button>
         </div>
         <div class="search-item">
-          <el-button @click="banDialog=true">添加封禁</el-button>
+          <el-button @click="handleBan">添加封禁</el-button>
         </div>
       </div>
     </template>
@@ -37,11 +37,12 @@
   <el-dialog v-model="banDialog" title="封禁IP">
     <div>
       <h3>封禁IP</h3>
-      <el-input v-model="ipInput" placeholder="xxx.xxx.xxx.xxx"/>
+      <el-input v-model="ipInput" placeholder="xxx.xxx.xxx.xxx" ref="ipInputRef"/>
     </div>
     <div>
       <h3>封禁原因</h3>
-      <el-input v-model="reasonInput" placeholder="请输入封禁原因"/>
+      <el-input v-model="reasonInput" placeholder="请输入封禁原因"
+                @keyup.enter.exact="banEnsure"/>
     </div>
     <template #footer>
       <el-button @click="banCancel">取消</el-button>
@@ -51,7 +52,7 @@
 </template>
 
 <script setup>
-import {computed, ref} from "vue"
+import {computed, nextTick, ref} from "vue"
 import {getBanIps, addBanIp, cancelBanIp} from "@/api/admin.js"
 import store from "@/store"
 
@@ -79,8 +80,15 @@ const resetSearch = () => {
 // 封禁
 const banDialog = ref(false)
 const ipInput = ref("")
+const ipInputRef = ref()
 const reasonInput = ref("")
 const banLoading = ref(false)
+const handleBan = () => {
+  banDialog.value = true
+  nextTick(() => {
+    ipInputRef.value.focus()
+  })
+}
 const banEnsure = async () => {
   banLoading.value = true
   if (reasonInput.value === "") {

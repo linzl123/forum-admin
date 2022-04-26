@@ -105,7 +105,8 @@
   <el-dialog v-model="banDialog" title="封禁用户">
     <div>
       <h3>封禁原因</h3>
-      <el-input v-model="banInput" placeholder="请输入封禁原因"/>
+      <el-input v-model="banInput" placeholder="请输入封禁原因" ref="banInputRef"
+                @keyup.enter.exact="banEnsure"/>
     </div>
     <template #footer>
       <el-button @click="banCancel">取消</el-button>
@@ -115,7 +116,7 @@
 </template>
 
 <script setup>
-import {computed, ref} from "vue"
+import {computed, nextTick, ref} from "vue"
 import {addBanUser, cancelBanUser, fetchSetAuditedUser, getBanUsers, getUsers, silenceUser} from "@/api/admin.js"
 import {getImg} from "@/api/image.js"
 import store from "@/store"
@@ -214,6 +215,7 @@ const silenceCancel = () => {
 // 禁用
 const banDialog = ref(false)
 const banInput = ref("")
+const banInputRef = ref()
 const banLoading = ref(false)
 let checkUser = null
 let banLock = false
@@ -224,6 +226,9 @@ const handleBan = async (user) => {
     banInput.value = user.banReason
     checkUser = user
     banDialog.value = true
+    nextTick(() => {
+      banInputRef.value.focus()
+    })
   } else {
     let res = await cancelBanUser(user.u_id)
     if (res.state === 100) {

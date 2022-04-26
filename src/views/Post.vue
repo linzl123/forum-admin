@@ -112,7 +112,8 @@
   <el-dialog v-model="topDialog" title="置顶帖子">
     <div>
       <h3>置顶原因（不输入为取消置顶）</h3>
-      <el-input v-model="topInput" placeholder="请输入置顶原因"/>
+      <el-input v-model="topInput" placeholder="请输入置顶原因" ref="topInputRef"
+                @keyup.enter.exact="topEnsure"/>
     </div>
     <template #footer>
       <el-button @click="topCancel">取消</el-button>
@@ -122,7 +123,7 @@
 </template>
 
 <script setup>
-import {computed, onDeactivated, ref} from "vue"
+import {computed, nextTick, onDeactivated, ref} from "vue"
 import {getImg} from "@/api/image.js"
 import store from "@/store"
 import {deletePostByPid, getHotPosts, getPostsByPids, getTopPost} from "@/api/post.js"
@@ -211,12 +212,16 @@ const handleInfo = (post) => {
 // 置顶
 const topDialog = ref(false)
 const topInput = ref("")
+const topInputRef = ref()
 const topLoading = ref(false)
 let checkPost = null
 const handleTop = (post) => {
   topInput.value = post.topDescribe
   checkPost = post
   topDialog.value = true
+  nextTick(() => {
+    topInputRef.value.focus()
+  })
 }
 const topEnsure = async () => {
   topLoading.value = true
@@ -251,7 +256,7 @@ const handleDelete = async (post) => {
   if (delLock) return
   delLock = true
   let res = await deletePostByPid(post.post_id)
-  if (res.state === 100||res.state === 101) {
+  if (res.state === 100 || res.state === 101) {
     allPostArr.value.splice(allPostArr.value.indexOf(post), 1)
     store.commit("alert", {message: "删除成功", type: "success"})
   } else {

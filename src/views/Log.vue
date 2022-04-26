@@ -78,7 +78,12 @@ const clearLog = () => {
 }
 // WebSocket
 const wsLoading = ref(false)
-const wsConnect = ref(false)
+const wsConnect = ref()
+if (window.ws) {
+  wsConnect.value = (window.ws.readyState === 1)
+} else {
+  wsConnect.value = false
+}
 const wsConnectText = computed(() => wsConnect.value ? "连接中" : "未连接")
 const wsSwitch = () => {
   wsLoading.value = true
